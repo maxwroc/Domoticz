@@ -1,0 +1,99 @@
+@font-face {
+    font-family: 'icomoon'; /*a name to be used later*/
+    src: url('icomoon.ttf'); /*URL to font*/
+}
+
+body {
+    background: #646464 url("images/body_pattern.png") repeat top left;
+}
+
+.navbar-inverse .navbar-inner {
+    background-image: url("images/bg_header.png");
+    background-repeat: repeat;
+    color: red;
+}
+
+.navbar-inverse .brand h1 {
+    color: #e7e7e7;
+    transition: all 200ms ease 0s;
+    opacity: 0.7;
+}
+
+.navbar-inverse .brand h1:hover {
+    opacity: 1;
+}
+
+
+/* header menu */
+.navbar {
+    font-family: 'Open Sans',arial,sans-serif;
+}
+.navbar .nav > li > a,
+.navbar .nav > li > a:hover,
+.navbar .nav .current_page_item > a,
+.navbar .nav .current_page_item > a:hover {
+    background-image: none;
+    color: #e7e7e7;
+    border: 0;
+    background-color: transparent;
+    opacity: 0.7;
+    position: relative;
+    top: -3px;
+}
+.navbar .nav > li > a:hover {
+    opacity: 1;
+}
+.navbar .nav .current_page_item > a,
+.navbar .nav .current_page_item > a:hover {
+    color: #FF772D;
+    opacity: 1;
+}
+.navbar .nav > li > a img {
+    display: none;
+}
+
+.navbar a:before {
+    font-family: 'icomoon';
+    font-size: 32px;
+    font-weight: normal;
+    position: relative;
+    top: 10px;
+}
+
+.navbar #cDashboard:before {
+    content: "\e915";
+}
+.navbar #cFloorplans:before {
+    content: "\e916";
+}
+.navbar #cLightSwitches:before {
+    content: "\e91c";
+}
+.navbar #cScenes:before {
+    content: "\e917";
+}
+.navbar #cTemperature:before {
+    content: "\e919";
+}
+.navbar #cWeather:before {
+    content: "\e91b";
+}
+.navbar #cUtility:before {
+    content: "\e91a";
+}
+.navbar .dropdown-toggle:before {
+    content: "\e918";
+}
+
+
+
+@media (max-width: 979px) and (min-width: 768px) {
+    .navbar-fixed-top .navbar-inner {
+        padding: 0 0 0 5px;
+    }
+}
+@media (max-width: 767px) {
+    .navbar-fixed-top .navbar-inner {
+        padding: 0 0 0 5px;
+    }
+}
