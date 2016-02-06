@@ -10,7 +10,6 @@ body {
 .navbar-inverse .navbar-inner {
     background-image: url("images/bg_header.png");
     background-repeat: repeat;
-    color: red;
 }
 
 .navbar-inverse .brand h1 {
@@ -45,7 +44,7 @@ body {
 }
 .navbar .nav .current_page_item > a,
 .navbar .nav .current_page_item > a:hover {
-    color: #FF772D;
+    color: #FF772D !important; /*there must be some default style for an active state which we need to override*/
     opacity: 1;
 }
 .navbar .nav > li > a img {
@@ -93,6 +92,9 @@ body {
     }
 }
 @media (max-width: 767px) {
+    .navbar .nav > li > a {
+        padding: 10px 4px 10px 4px !important;
+    }
     .navbar-fixed-top .navbar-inner {
         padding: 0 0 0 5px;
     }
