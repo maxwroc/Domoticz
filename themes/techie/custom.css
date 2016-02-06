@@ -22,10 +22,16 @@ body {
     opacity: 1;
 }
 
+body {
+    padding-top: 71px;
+}
 
 /* header menu */
 .navbar {
     font-family: 'Open Sans',arial,sans-serif;
+    position: absolute;
+    margin-left: 0;
+    margin-right: 0;
 }
 .navbar .nav > li > a,
 .navbar .nav > li > a:hover,
