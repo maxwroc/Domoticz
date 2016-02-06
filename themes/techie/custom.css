@@ -22,16 +22,10 @@ body {
     opacity: 1;
 }
 
-body {
-    padding-top: 71px;
-}
 
 /* header menu */
 .navbar {
     font-family: 'Open Sans',arial,sans-serif;
-    position: absolute;
-    margin-left: 0;
-    margin-right: 0;
 }
 .navbar .nav > li > a,
 .navbar .nav > li > a:hover,
@@ -93,11 +87,27 @@ body {
 
 
 @media (max-width: 979px) and (min-width: 768px) {
+    body {
+        padding-top: 71px;
+    }
+    .navbar {
+        position: absolute;
+        margin-left: 0;
+        margin-right: 0;
+    }
     .navbar-fixed-top .navbar-inner {
         padding: 0 0 0 5px;
     }
 }
 @media (max-width: 767px) {
+    body {
+        padding-top: 71px;
+    }
+    .navbar {
+        position: absolute;
+        margin-left: 0;
+        margin-right: 0;
+    }
     .navbar .nav > li > a {
         padding: 10px 4px 10px 4px !important;
     }
