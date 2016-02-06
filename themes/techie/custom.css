@@ -99,3 +99,61 @@ body {
         padding: 0 0 0 5px;
     }
 }
+
+
+
+/* #### Dashboard  #### */
+
+body table#itemtablesmall tbody tr {
+    box-shadow: 5px 5px 10px #333333;
+    border-radius: 10px 10px 5px 5px; /* remove white lines on top corners */
+    padding: 0 0 5px;
+    position: relative; /* to position the last TD on the bottom right */
+    height: 70px;
+    width: 100%;
+}
+body table#itemtablesmall tbody tr:after {
+    clear: both;
+}
+body table#itemtablesmall tr td:first-child {
+    background-image: url("images/bg_header.png");
+    background-repeat: repeat;
+    border: none;
+    border-radius: 5px 5px 0 0;
+    color: #e7e7e7;
+    padding: 3px 5px;
+    font-size: 120%;
+    cursor: pointer;
+}
+body table#itemtablesmall tr:hover td:first-child {
+    color: white;
+}
+body table#itemtablesmall tr td:first-child + td {
+    color: #FF772D;
+    font-weight: normal;
+    padding: 0 5px;
+    font-size: 120%;
+}
+body table#itemtablesmall tr td:first-child + td + td + td + td { /* last updated */
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+}
+body table#itemtablesmall tr td:first-child + td + td + td + td:before { /* last updated text */
+    display: none;
+}
+#comboroom {
+    background-color: #252F31;
+    color: #FF772D;
+}
+
+@media (min-width: 1200px) {
+    
+    .row .span4 {
+        margin-left: 32px;
+        width: 368px;
+    }
+    .span4:first-child {
+        margin-left: 16px;
+    }
+}
