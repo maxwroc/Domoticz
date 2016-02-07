@@ -3,17 +3,36 @@
     src: url('icomoon.ttf'); /*URL to font*/
 }
 
+.btnsmall,
 .btnstyle,
+.btnstyle3,
+.btnstyle3-dis,
 .btnstylerev {
     background: url("images/bg_header.png") repeat-x;
     color: #e7e7e7;
-    opacity: 0.7;
+    margin: 3px 0;
+}
+.btnstyle,
+.btnstyle3,
+.btnstyle3-dis,
+.btnstylerev {
     padding: 3px 15px;
 }
+.btnsmall:hover,
 .btnstyle:hover,
+.btnstyle3:hover,
 .btnstylerev:hover {
-    opacity: 1;
+    color: #fff;
 }
+.btnstyle3-dis {
+    color: #e7e7e7;
+    opacity: 0.7;
+}
+
+tr.odd {
+    background-color: #FFCCB1;
+}
+
 
 body {
     background: #646464 url("images/body_pattern.png") repeat top left;
@@ -126,23 +145,33 @@ body {
     .navbar-fixed-top .navbar-inner {
         padding: 0 0 0 5px;
     }
+    [class*="span"] {
+        margin: 0 0 15px 0;
+    }
 }
 
 
 
-/* #### Dashboard  #### */
+/* #### Items  #### */
 
+body table#itemtable tbody tr,
+body table#itemtablenotype tbody tr,
+body table#itemtabledoubleicon tbody tr,
+body table#itemtablenostatus tbody tr,
 body table#itemtablesmall tbody tr {
     box-shadow: 5px 5px 10px #333333;
     border-radius: 10px 10px 5px 5px; /* remove white lines on top corners */
     padding: 0 0 5px;
     position: relative; /* to position the last TD on the bottom right */
-    height: 70px;
     width: 100%;
 }
-body table#itemtablesmall tbody tr:after {
-    clear: both;
+body table#itemtablesmall tbody tr {
+    height: 70px;
 }
+body table#itemtable tr td:first-child, /* title */
+body table#itemtablenotype tr td:first-child,
+body table#itemtabledoubleicon tr td:first-child,
+body table#itemtablenostatus tr td:first-child,
 body table#itemtablesmall tr td:first-child {
     background-image: url("images/bg_header.png");
     background-repeat: repeat;
@@ -152,15 +181,26 @@ body table#itemtablesmall tr td:first-child {
     padding: 3px 5px;
     font-size: 120%;
     cursor: pointer;
+    overflow: hidden; /* cut too long name */
 }
+body table#itemtable tr:hover td:first-child,
+body table#itemtablenotype tr:hover td:first-child,
+body table#itemtabledoubleicon tr:hover td:first-child,
+body table#itemtablenostatus tr:hover td:first-child,
 body table#itemtablesmall tr:hover td:first-child {
     color: white;
 }
+body table#itemtable tr td:first-child + td, /* status */
+body table#itemtablenotype tr td:first-child + td,
+body table#itemtabledoubleicon tr td:first-child + td,
+body table#itemtablenostatus tr td:first-child + td,
 body table#itemtablesmall tr td:first-child + td {
     color: #FF772D;
     font-weight: normal;
     padding: 0 5px;
     font-size: 120%;
+    position: relative; /* to force stay on top */
+    background-color: #252F31; /* hover long text below */
 }
 body table#itemtablesmall tr td:first-child + td + td + td + td { /* last updated */
     position: absolute;
@@ -187,6 +227,18 @@ body table#itemtablesmall tr td:first-child + td + td + td + td:before { /* last
 }
 
 
+
+/* mobile */
+
+.mobileitem th {
+    background-image: url("images/bg_header.png");
+    background-repeat: repeat;
+    color: #e7e7e7;
+}
+.btn-info {
+    background-color: #FF772D;
+    background-image: none;
+}
 
 
 
