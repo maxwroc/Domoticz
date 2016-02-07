@@ -3,6 +3,18 @@
     src: url('icomoon.ttf'); /*URL to font*/
 }
 
+.btnstyle,
+.btnstylerev {
+    background: url("images/bg_header.png") repeat-x;
+    color: #e7e7e7;
+    opacity: 0.7;
+    padding: 3px 15px;
+}
+.btnstyle:hover,
+.btnstylerev:hover {
+    opacity: 1;
+}
+
 body {
     background: #646464 url("images/body_pattern.png") repeat top left;
 }
@@ -171,5 +183,32 @@ body table#itemtablesmall tr td:first-child + td + td + td + td:before { /* last
     }
     .span4:first-child {
         margin-left: 16px;
+    }
+}
+
+
+
+
+
+/* #### Graphs - Highcharts #### */
+.highcharts-title {
+    color: #ff772D !important;
+    fill: #ff772D !important;
+}
+.highcharts-background {
+    fill: #252F31;
+    stroke: #252F31;
+}
+.highcharts-series-group .highcharts-series.highcharts-tracker rect {
+    fill: #ff772D;
+}
+.highcharts-container .highcharts-yaxis-title,
+.highcharts-container .highcharts-yaxis-labels text {
+    color: #C0C0C0 !important; /* override inline styles */
+    fill: #C0C0C0 !important; /* override inline styles */
+}
+@media (max-width: 979px) {
+    .highcharts-series-group .highcharts-series path:first-child {
+        stroke-width: 1;
     }
 }
