@@ -264,3 +264,37 @@ body table#itemtablesmall tr td:first-child + td + td + td + td:before { /* last
         stroke-width: 1;
     }
 }
+
+
+
+/*  #### Settings ####  */
+.sub-tabs > .active > a,
+.sub-tabs > .active > a:hover {
+    background-color: #FF772D;
+    border-color: #FF772D;
+    color: white;
+    font-weight: bold;
+}
+.tab-content {
+    background-color: #FF772D;
+    box-shadow: 5px 5px 10px #333333;
+    padding: 0 10px 20px;
+    margin-bottom: 20px;
+    color: #252F31;
+}
+.tab-content h1,
+.tab-content h2 {
+    color: white;
+}
+.tab-content select,
+.tab-content .btn-info,
+.tab-content .btn-info:hover {
+    background-color: #252F31;
+    color: white;
+}
+.tab-content .btn-info {
+    opacity: 0.7;
+}
+.tab-content .btn-info:hover {
+    opacity: 1;
+}
