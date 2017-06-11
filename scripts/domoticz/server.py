@@ -66,11 +66,11 @@ class Server:
         :return: List of devices
         :rtype: array
         """
-        result = self.get_all_devices()
+        devices = self.get_all_devices()
         return [
             device
-            for device in result["result"]
-            if "HardwareID" in device and device["HardwareID"] == hardware_id]
+            for device in devices
+            if "HardwareID" in device and device["HardwareID"] == int(hardware_id)]
 
     def get_all_hardware(self):
         """ Gets a list of all hardware installed on server.
@@ -89,10 +89,17 @@ class Server:
         :return: Hardware object.
         :rtype: object
         """
-        return get_object_with_property_value(
+        hardware_data = get_object_with_property_value(
             self.get_all_hardware(),
             property_name,
             property_value)
+
+        if hardware_data is None:
+            return
+
+        from .hardware import Hardware
+
+        return Hardware(self, data=hardware_data)
 
     def create_virtual_hardware(self, name):
         """ Creates new virtual hardware.

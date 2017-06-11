@@ -6,4 +6,7 @@ server = domoticz.Server("192.168.2.104")
 
 
 #pp.pprint(server.create_virtual_hardware("Heheszki"))
-pp.pprint(server.delete_hardware(name="Heheszki"))
+#pp.pprint(server.delete_hardware(name="Heheszki"))
+
+hardware = server.get_hardware("Name", "SmartPlug")
+pp.pprint(hardware.get_devices())
