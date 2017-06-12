@@ -5,6 +5,8 @@ import getopt
 import pprint
 import domoticz
 
+from pyHS100 import TPLinkSmartHomeProtocol
+
 domoticz_host = 'localhost'
 domoticz_port = '8080'
 hardware_name = "SmartPlug"
@@ -44,6 +46,8 @@ def main(argv):
               " (" + device.data["Type"] + ") " +
               device.data["Description"])
 
+    for dev in TPLinkSmartHomeProtocol.discover():
+        print("Found device: %s" % dev["ip"])
 
 if __name__ == "__main__":
     main(sys.argv[1:])
