@@ -17,6 +17,7 @@ def fetch_json(host, port, query):
     :raises ValueError: When there was an error on the server
     """
     url = "http://" + host + ":" + port + "/json.htm?" + query
+    print("$ Url: " + url)
     response = urllib.request.urlopen(url)
 
     if response is None:
@@ -24,9 +25,11 @@ def fetch_json(host, port, query):
 
     parsed_result = json.loads(response.read())
     if parsed_result["status"] != "OK":
-        raise ValueError("Invalid response from server", parsed_result)
+        msg = "Request did not succeed. "
+        if "message" in parsed_result:
+            msg += parsed_result["status"] + ": " + parsed_result["message"]
+        raise ValueError(msg, parsed_result)
 
-    print(url)
     return parsed_result
 
 def get_object_with_property_value(collection, name, value):
@@ -152,16 +155,20 @@ class DomoticzApi:
         self.fetch("type=command&param=deletehardware&idx=" + str(hardware_id))
 
     def update_device(self, idx, name, properties_to_update):
-        #"type=setused&idx=176&name=SmartPlug&description=test&strparam1=c2NyaXB0Oi8vL2hvbWUvcGkvbWF4d3JvYy9Eb21vdGljei9zY3JpcHRzL2hzMTAwLnNoIDE5Mi4xNjguMi4xNDUgOTk5OSBvbg==&strparam2=c2NyaXB0Oi8vL2hvbWUvcGkvbWF4d3JvYy9Eb21vdGljei9zY3JpcHRzL2hzMTAwLnNoIDE5Mi4xNjguMi4xNDUgOTk5OSBvZmY=&protected=false&switchtype=0&customimage=0&used=true&addjvalue=0&addjvalue2=0&options="
-
+        """ Updates device properties
+        """
         # these two are required
         properties_to_update["type"] = "setused"
         properties_to_update["used"] = "true"
         properties_to_update["idx"] = idx
         properties_to_update["name"] = name
 
-        self.fetch(urllib.parse.urlencode(properties_to_update))
+        self.query(**properties_to_update)
 
+    def query(self, **params):
+        """ Generic method to make a request to server.
+        """
+        return self.fetch(urllib.parse.urlencode(params))
 
     def fetch(self, query):
         """ Fetches JSON data from server for a given query text.

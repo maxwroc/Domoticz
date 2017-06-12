@@ -74,7 +74,7 @@ class Device:
     :param idx: Device ID.
     :param data: Device JSON data.
     """
-    def __init__(self, server_instance: Server, idx=None, data=None):
+    def __init__(self, server_instance=Server(), idx=None, data=None):
         self.server = server_instance
         self.idx = idx
         self.data = data
@@ -96,6 +96,8 @@ class Device:
             raise ValueError("Failed to fetch device data for ID: " + str(self.idx))
 
     def update(self):
+        """ Updates object on the server side with changed values.
+        """
         if self.values_to_update is None:
             return
 
@@ -106,31 +108,85 @@ class Device:
         # clear list
         self.values_to_update = {}
 
+    def generic_getter(self, name, base64_decode=False):
+        """ Generic properties getter.
+        :param name: Name of the property.
+        :param base64_decode: Whether to base64 decode,
+        :return: Property value.
+        :rtype: str
+        """
+        if self.data is None or name not in self.data:
+            return
+
+        if base64_decode:
+            return base64.b64decode(self.data[name]).decode("utf-8")
+        return self.data[name]
+
+    def generic_setter(self, name, val, base64e_encode=False):
+        """ Generic properties setter.
+        :param name: Name of the property.
+        :param base64_decode: Whether to base64 decode,
+        :return: Property value.
+        :rtype: str
+        """
+        if val is None:
+            val = ""
+
+        if base64e_encode:
+            # we need to convert string to byte-like before base64 encoding
+            val = base64.b64encode(val.encode()).decode("utf-8")
+
+        if val != self.data[name]:
+            self.values_to_update[name.lower()] = val
+
 class SwitchDevice(Device):
     """ Represents Switch device.
     """
     @property
     def str_param_1(self):
-        if self.data is None or "StrParam1" not in self.data:
-            return
-
-        return base64.b64decode(self.data["StrParam1"]).decode("utf-8")
-
+        return self.generic_getter("StrParam1", True)
     @str_param_1.setter
     def str_param_1(self, val):
-        if val is None:
-            val = ""
+        self.generic_setter("StrParam1", val, True)
 
-        # we need to convert string to byte-like before base64 encoding
-        encoded_val = base64.b64encode(val.encode())
-        if encoded_val != self.data["StrParam1"]:
-            self.values_to_update["strparam1"] = encoded_val.decode("utf-8")
+    @property
+    def str_param_2(self):
+        return self.generic_getter("StrParam2", True)
+    @str_param_2.setter
+    def str_param_2(self, val):
+        self.generic_setter("StrParam2", val, True)
+
+    @property
+    def description(self):
+        return self.generic_getter("Description")
+    @description.setter
+    def description(self, val):
+        self.generic_setter("Description", val)
+
+    def On(self):
+        self.server.query(
+            type="command",
+            param="switchlight",
+            idx=self.idx,
+            switchcmd="On",
+            level=0
+        )
+
+    def Off(self):
+        self.server.query(
+            type="command",
+            param="switchlight",
+            idx=self.idx,
+            switchcmd="Off",
+            level=0,
+            passcode=""
+        )
 
 def device_factory(server_instance, data):
     """ Creates proper object based on device data.
     """
 
-    if data["Type"] == "Light/Switch":
+    if "SwitchType" in data and data["SwitchType"] == "On/Off":
         return SwitchDevice(server_instance, data=data)
 
     return Device(server_instance, data=data)
