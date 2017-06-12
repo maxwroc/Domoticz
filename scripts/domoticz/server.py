@@ -1,155 +1,136 @@
-import json
-import urllib.request
+import base64
 
-def fetch_json(host, port, query):
+from .api import DomoticzApi
+
+class Server(DomoticzApi):
     """
-    Fetches data from given host and parses it as a JSON. Additionally it validates
-    if the request/response was sucessfult and there were no errors on the server.
-
-    :param host: Host on which Domoticz is running
-    :param port: Port on which domoticz is listening
-    :param query: Query to be used to fetch the data
-    :return: Response JSON
-    :rtype: json
-
-    :raises ValueError: When no response from server
-    :raises ValueError: When there was an error on the server
+    Represents server object. It is an API wrapper which returns objects as function results
     """
-    url = "http://" + host + ":" + port + "/json.htm?" + query
-    response = urllib.request.urlopen(url)
 
-    if response is None:
-        raise ValueError("Getting response from host failed: " + url)
-
-    parsed_result = json.loads(response.read())
-    if parsed_result["status"] != "OK":
-        raise ValueError("Invalid response from server", parsed_result)
-
-    return parsed_result
-
-def get_object_with_property_value(collection, name, value):
-    """ Returns first object, from given collection, which has a property with given value.
-
-    :param collection: Collection to search.
-    :param name: Property name which value should be checked.
-    :param value: Value to match.
-    :return: Object
-    """
-    for obj in collection:
-        if obj[name] == value:
-            return obj
-    return
-
-class Server:
-    """ Server class exposigng API requests as functions.
-    """
-    host = "localhost"
-    port = "8080"
-
-    def __init__(self, host="localhost", port="8080"):
-        self.host = host
-        self.port = port
-
-    def get_all_devices(self):
-        """ Gets a list of all available devices on server.
-
-        :return: List of devices
-        :rtype: array
-        """
-        return self.fetch("type=devices&filter=all&used=true")["result"]
-
-    def get_devices_for_hardware(self, hardware_id):
-        """ Gets a list of devices assigned to given hardware.
-
-        :param hardware_id: Hardware ID.
-
-        :return: List of devices
-        :rtype: array
-        """
-        devices = self.get_all_devices()
-        return [
-            device
-            for device in devices
-            if "HardwareID" in device and device["HardwareID"] == int(hardware_id)]
-
-    def get_all_hardware(self):
-        """ Gets a list of all hardware installed on server.
-
-        :return: List of hardware.
-        :rtype: array
-        """
-        return self.fetch("type=hardware")["result"]
-
-    def get_hardware(self, property_name, property_value):
-        """ Gets hardware object with given property value.
-
-        :param property_name: Property name which value should be searched for.
-        :param property_value: Value which should match.
-
+    def get_hardware_obj(self, property_name, property_value):
+        """ Gets a hardware object.
         :return: Hardware object.
-        :rtype: object
+        :rtype: Hardware
         """
-        hardware_data = get_object_with_property_value(
-            self.get_all_hardware(),
-            property_name,
-            property_value)
-
-        if hardware_data is None:
+        result = self.get_hardware(property_name, property_value)
+        if result is None:
             return
 
-        from .hardware import Hardware
+        return Hardware(self, data=result)
 
-        return Hardware(self, data=hardware_data)
-
-    def create_virtual_hardware(self, name):
-        """ Creates new virtual hardware.
-
-        :param name: Name of the hardware.
-
-        :return: Created hardware.
-        :rtype: object
+    def get_all_hardware_objs(self):
+        """ Gets a list of all hardware installed on server.
+        :return: List of hardware.
+        :rtype: Hardware list
         """
-        # check if such hardware does not exist already
-        existing_hardware = self.get_hardware("Name", name)
-        if existing_hardware is not None:
-            raise ValueError(
-                "Hardware with given name exists already [" + existing_hardware["idx"] + "]")
+        results = self.get_all_hardware()
 
-        # send a request to create hardware
-        self.fetch("type=command&param=addhardware&htype=15&port=0&name=" + name + "&enabled=true")
+        if results is None:
+            return []
 
-        # double check if it was created
-        existing_hardware = self.get_hardware("Name", name)
-        if existing_hardware is None:
-            raise ValueError("Failed to create new hardware")
+        return [Hardware(self, data=hw) for hw in results]
 
-        return existing_hardware
-
-    def delete_hardware(self, hardware_id=None, name=None):
-        """ Deletes hardware with given ID or name.
-
-        :param id: Hardware ID.
-        :param name: Name of the hardware.
-        :return: None
+    def get_device_obj(self, property_name, property_value):
+        """ Gets a single device with given property value.
+        :param property_name: Property name which value should be searched for.
+        :param property_value: Value which should match.
+        :return: Device object.
+        :rtype: Devic
         """
+        result = self.get_device(property_name, property_value)
+        if result is None:
+            return
 
-        if hardware_id is None and name is None:
-            raise ValueError("Failed to delete hardware. No hardware id or name passed.")
+        return device_factory(self, result)
 
-        if hardware_id is None and name is not None:
-            # we need to find the hardware with given name to get it's ID
-            hardware = self.get_hardware("Name", name)
-            if hardware is None:
-                raise ValueError("Failed to delete hardware with given name: " + name)
+class Hardware:
+    """ Represents hardware object stored on server.
+    :param server: Server instance.
+    :param idx: Hardware ID.
+    :param data: Hardware JSON data.
+    """
+    def __init__(self, server_instance, idx=None, data=None):
+        self.server = server_instance
+        self.idx = idx
+        self.data = data
 
-            hardware_id = hardware["idx"]
+        if data is not None:
+            self.idx = data["idx"]
+        elif idx is not None:
+            self.data = server_instance.get_hardware("idx", idx)
+            if self.data is None:
+                raise ValueError("Failed to fetch hardware data for ID: " + str(idx))
 
-        self.fetch("type=command&param=deletehardware&idx=" + str(hardware_id))
-
-    def fetch(self, query):
-        """ Fetches JSON data from server for a given query text.
-        :param query: Url query string.
-        :return: Server response.
-        :rtype: json
+    def get_devices(self):
+        """ Gets all devices from current hardware.
+        :return: List of devices.
+        :rtype: list
         """
-        return fetch_json(self.host, self.port, query)
+        return self.server.get_devices_for_hardware(self.idx)
+
+class Device:
+    """ Represens generic device object.
+    :param server: Server instance.
+    :param idx: Device ID.
+    :param data: Device JSON data.
+    """
+    def __init__(self, server_instance: Server, idx=None, data=None):
+        self.server = server_instance
+        self.idx = idx
+        self.data = data
+        self.values_to_update = {}
+
+        if data is not None:
+            self.idx = data["idx"]
+        elif idx is not None:
+            self.fetch()
+
+    def fetch(self):
+        """ Fetches device data
+        """
+        if self.idx is None:
+            raise ValueError("Device data cannot be fetched if idx is missing")
+
+        self.data = self.server.get_device("idx", self.idx)
+        if self.data is None:
+            raise ValueError("Failed to fetch device data for ID: " + str(self.idx))
+
+    def update(self):
+        if self.values_to_update is None:
+            return
+
+        # update device data on server
+        self.server.update_device(self.idx, self.data["Name"], self.values_to_update)
+        # fetch data from server and update current object
+        self.fetch()
+        # clear list
+        self.values_to_update = {}
+
+class SwitchDevice(Device):
+    """ Represents Switch device.
+    """
+    @property
+    def str_param_1(self):
+        if self.data is None or "StrParam1" not in self.data:
+            return
+
+        return base64.b64decode(self.data["StrParam1"]).decode("utf-8")
+
+    @str_param_1.setter
+    def str_param_1(self, val):
+        if val is None:
+            val = ""
+
+        # we need to convert string to byte-like before base64 encoding
+        encoded_val = base64.b64encode(val.encode())
+        if encoded_val != self.data["StrParam1"]:
+            self.values_to_update["strparam1"] = encoded_val.decode("utf-8")
+
+def device_factory(server_instance, data):
+    """ Creates proper object based on device data.
+    """
+
+    if data["Type"] == "Light/Switch":
+        return SwitchDevice(server_instance, data=data)
+
+    return Device(server_instance, data=data)
