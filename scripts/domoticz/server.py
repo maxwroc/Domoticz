@@ -63,10 +63,13 @@ class Hardware:
 
     def get_devices(self):
         """ Gets all devices from current hardware.
-        :return: List of devices.
-        :rtype: list
+        :return: List of devices
+        :rtype: list[Device]
         """
-        return self.server.get_devices_for_hardware(self.idx)
+        # convert json results to proper device objects
+        return list(map(
+            lambda d: device_factory(self.server, d),
+            self.server.get_devices_for_hardware(self.idx)))
 
 class Device:
     """ Represens generic device object.
