@@ -2,14 +2,14 @@ import pprint
 import domoticz
 
 pp = pprint.PrettyPrinter(4)
-server = domoticz.Server("192.168.2.103")
+server = domoticz.Server("192.168.2.104")
 
 
 #pp.pprint(server.create_virtual_hardware("Heheszki"))
 #pp.pprint(server.delete_hardware(name="Heheszki"))
 
-zonk = server.get_device_obj("Name", "Master bathroom")
-zonk.Off()
+zonk = server.get_hardware_obj("Name", "SmartPlug")
+pp.pprint(zonk.idx)
 
 quit()
 

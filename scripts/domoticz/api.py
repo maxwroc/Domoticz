@@ -32,23 +32,6 @@ def fetch_json(host, port, query):
 
     return parsed_result
 
-def get_object_with_property_value(collection, name, value):
-    """ Returns first object, from given collection, which has a property with given value.
-    :param collection: Collection to search.
-    :param name: Property name which value should be checked.
-    :param value: Value to match.
-    :return: Object
-    """
-
-    if not isinstance(collection, list):
-        raise ValueError(
-            "Invalid value passed. Expecting list but received " + str(type(collection)))
-
-    for obj in collection:
-        if obj[name] == value:
-            return obj
-    return
-
 class DomoticzApi:
     """ Server class exposigng API requests as functions.
     """
@@ -59,12 +42,13 @@ class DomoticzApi:
         self.host = host
         self.port = port
 
-    def get_all_devices(self):
+    def get_all_devices(self, custom_filter=None):
         """ Gets a list of all available devices on server.
         :return: List of devices
-        :rtype: array
+        :rtype: list
         """
-        return self.fetch("type=devices&filter=all&used=true")["result"]
+        result = self.fetch("type=devices&filter=all&used=true")["result"]
+        return list(filter(custom_filter, result))
 
     def get_device(self, property_name, property_value):
         """ Gets a single device with given property value.
@@ -79,7 +63,12 @@ class DomoticzApi:
 
         results = self.fetch(query)["result"]
 
-        return get_object_with_property_value(results, property_name, str(property_value))
+        results = list(filter(lambda x: x[property_name] == property_value, results))
+
+        if not results:
+            return None
+
+        return results[0]
 
     def get_devices_for_hardware(self, hardware_id):
         """ Gets a list of devices assigned to given hardware.
@@ -87,18 +76,17 @@ class DomoticzApi:
         :return: List of devices
         :rtype: list
         """
-        devices = self.get_all_devices()
-        return [
-            device
-            for device in devices
-            if "HardwareID" in device and device["HardwareID"] == int(hardware_id)]
+        hardware_id = int(hardware_id)
+        return self.get_all_devices(
+            lambda hw: "HardwareID" in hw and hw["HardwareID"] == hardware_id)
 
-    def get_all_hardware(self):
+    def get_all_hardware(self, custom_filter=None):
         """ Gets a list of all hardware installed on server.
         :return: List of hardware.
         :rtype: list
         """
-        return self.fetch("type=hardware")["result"]
+        results = self.fetch("type=hardware")["result"]
+        return list(filter(custom_filter, results))
 
     def get_hardware(self, property_name, property_value):
         """ Gets hardware object with given property value.
@@ -107,10 +95,13 @@ class DomoticzApi:
         :return: Hardware data.
         :rtype: json
         """
-        return get_object_with_property_value(
-            self.get_all_hardware(),
-            property_name,
-            property_value)
+        results = self.get_all_hardware(
+            lambda hw: property_name in hw and hw[property_name] == property_value)
+
+        if not results:
+            return
+
+        return results[0]
 
     def create_virtual_hardware(self, name):
         """ Creates new virtual hardware.
