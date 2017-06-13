@@ -17,7 +17,6 @@ def fetch_json(host, port, query):
     :raises ValueError: When there was an error on the server
     """
     url = "http://" + host + ":" + port + "/json.htm?" + query
-    print("$ Url: " + url)
     response = urllib.request.urlopen(url)
 
     if response is None:
