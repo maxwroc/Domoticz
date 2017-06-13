@@ -106,6 +106,19 @@ class DomoticzApi:
 
         return results[0]
 
+    def create_virtual_sensor(self, name, sensor_type, hardware_id):
+        """ Creates virtual sensor for given hardware
+        :param name: Name of the sensor.
+        :param sensor_type: Type of the sensor (int)
+        :param hardware_id: Hardware ID.
+        """
+        self.query(
+            type="createvirtualsensor",
+            idx=hardware_id,
+            sensorname=name,
+            sensortype=sensor_type
+        )
+
     def create_virtual_hardware(self, name):
         """ Creates new virtual hardware.
         :param name: Name of the hardware.

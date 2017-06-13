@@ -50,6 +50,9 @@ class Hardware:
     :param data: Hardware JSON data.
     """
     def __init__(self, server_instance, idx=None, data=None):
+        if not server_instance:
+            raise ValueError("Failed to create Hardware object: missing server instance")
+
         self.server = server_instance
         self.idx = idx
         self.data = data
@@ -77,6 +80,13 @@ class Device:
     :param idx: Device ID.
     :param data: Device JSON data.
     """
+
+    @property
+    def description(self):
+        if not self.data or not "Description" in self.data:
+            return
+        return self.data["Description"]
+
     def __init__(self, server_instance=Server(), idx=None, data=None):
         self.server = server_instance
         self.idx = idx

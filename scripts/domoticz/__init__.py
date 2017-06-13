@@ -1,4 +1,2 @@
 
-from .server import Server
-from .server import Device
-from .server import SwitchDevice
+from .server import (Server, Hardware, Device, SwitchDevice)
