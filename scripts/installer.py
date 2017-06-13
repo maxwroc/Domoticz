@@ -9,7 +9,7 @@ from domoticz import Server
 from pyHS100 import TPLinkSmartHomeProtocol
 
 _LOGGER = logging.getLogger(__name__)
-# output log messages to console
+# output log info messages to console
 _LOGGER.addHandler(logging.StreamHandler(sys.stdout))
 
 domoticz_host = 'localhost'
@@ -86,7 +86,6 @@ def install():
             "  Found device: %s (%s)",
             dev["ip"],
             dev["sys_info"]["system"]["get_sysinfo"]["alias"])
-
 
 if __name__ == "__main__":
     main(sys.argv[1:])
