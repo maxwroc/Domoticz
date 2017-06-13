@@ -3,9 +3,14 @@
 import sys
 import getopt
 import pprint
+import logging
 
 from domoticz import Server
 from pyHS100 import TPLinkSmartHomeProtocol
+
+_LOGGER = logging.getLogger(__name__)
+# output log messages to console
+_LOGGER.addHandler(logging.StreamHandler(sys.stdout))
 
 domoticz_host = 'localhost'
 domoticz_port = '8080'
@@ -44,39 +49,43 @@ def print_help():
 def install():
     """ Discovers devices in the local network and installs them on Domoticz server
     """
-    print("Running installer")
-    print("Checking domoticz server configuration")
+    # log to explicit file
+    logging.basicConfig(filename="installer.log", level=logging.DEBUG)
+
+    _LOGGER.info("Running installer")
+    _LOGGER.info("Checking domoticz server configuration")
     server = Server(domoticz_host, domoticz_port)
-    print("  Try to get existing virtual hardware: ", end="")
+    _LOGGER.info("  Try to get existing virtual hardware:")
     hardware = server.get_hardware_obj("Name", hardware_name)
     if hardware:
-        print("found (ID:%s)" % hardware.idx)
+        _LOGGER.info("    found (ID:%s)", hardware.idx)
     else:
-        print("not found")
-        print("  Creating new virtual hardware: ", end="")
+        _LOGGER.info("not found")
+        _LOGGER.info("  Creating new virtual hardware:")
         hardware = server.create_virtual_hardware(hardware_name)
         if hardware:
-            print("created")
+            _LOGGER.info("    created")
         else:
-            print("failed")
+            _LOGGER.info("    failed")
             return
 
-    print("  Getting installed devices")
+    _LOGGER.info("  Getting installed devices")
     devices = hardware.get_devices()
     if devices:
         for device in devices:
-            print(
-                "    Found device: %s (%s) %s" %
-                (device.idx, device.data["Type"], device.data["Description"]))
+            _LOGGER.info(
+                "    Found device: %s (%s) %s",
+                device.idx, device.data["Type"], device.data["Description"])
     else:
-        print("    Devices not found")
+        _LOGGER.info("    Devices not found")
 
     print("Discovering devices in your local network...")
     network_devices = TPLinkSmartHomeProtocol.discover()
     for dev in network_devices:
-        print(
-            "  Found device: %s (%s)" %
-            (dev["ip"], dev["sys_info"]["system"]["get_sysinfo"]["alias"]))
+        _LOGGER.info(
+            "  Found device: %s (%s)",
+            dev["ip"],
+            dev["sys_info"]["system"]["get_sysinfo"]["alias"])
 
 
 if __name__ == "__main__":

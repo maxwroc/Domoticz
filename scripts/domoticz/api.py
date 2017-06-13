@@ -1,6 +1,9 @@
 import json
 import urllib.request
 import urllib.parse
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 def fetch_json(host, port, query):
     """
@@ -17,9 +20,10 @@ def fetch_json(host, port, query):
     :raises ValueError: When there was an error on the server
     """
     url = "http://" + host + ":" + port + "/json.htm?" + query
+    _LOGGER.debug("Fetching url: %s", url)
     response = urllib.request.urlopen(url)
 
-    if response is None:
+    if not response:
         raise ValueError("Getting response from host failed: " + url)
 
     parsed_result = json.loads(response.read())
