@@ -112,12 +112,27 @@ class DomoticzApi:
         :param sensor_type: Type of the sensor (int)
         :param hardware_id: Hardware ID.
         """
+        _LOGGER.debug("Creating new virtual sensor")
+        assert isinstance(hardware_id, int)
         self.query(
             type="createvirtualsensor",
             idx=hardware_id,
             sensorname=name,
             sensortype=sensor_type
         )
+
+        _LOGGER.debug("Searching for newest device assigned to hardware (%s)", hardware_id)
+        # this is not a perfect solution but couldn't figure out a better way
+        all_devices = self.get_all_devices()
+        newest_device = None
+        for device in all_devices:
+            if "HardwareID" in device and device["HardwareID"] == hardware_id:
+                if not newest_device or (int(newest_device["idx"]) < int(device["idx"])):
+                    newest_device = device
+
+        if not newest_device:
+            _LOGGER.error("Failed to find newly created device")
+        return newest_device
 
     def create_virtual_hardware(self, name):
         """ Creates new virtual hardware.

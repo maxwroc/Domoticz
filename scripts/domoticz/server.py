@@ -81,12 +81,6 @@ class Device:
     :param data: Device JSON data.
     """
 
-    @property
-    def description(self):
-        if not self.data or not "Description" in self.data:
-            return
-        return self.data["Description"]
-
     def __init__(self, server_instance=Server(), idx=None, data=None):
         self.server = server_instance
         self.idx = idx
@@ -97,6 +91,22 @@ class Device:
             self.idx = data["idx"]
         elif idx is not None:
             self.fetch()
+
+    @property
+    def description(self):
+        return self.generic_getter("Description")
+
+    @description.setter
+    def description(self, val):
+        self.generic_setter("Description", val)
+
+    @property
+    def type_string(self):
+        return self.generic_getter("Type")
+
+    @type_string.setter
+    def type_string(self, val):
+        self.generic_setter("Type", val)
 
     def fetch(self):
         """ Fetches device data
