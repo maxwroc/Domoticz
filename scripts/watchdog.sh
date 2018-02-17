@@ -2,7 +2,7 @@
 
 function message() {
     echo "Watchdog: $1"
-    pushover.sh "Watchdog: $1"
+    $(dirname "$0")/pushover.sh -f "/home/max/.config/pushover.conf" "Watchdog: $1"
 }
 
 if curl --output /dev/null --silent --head --fail "http://localhost:8080"
